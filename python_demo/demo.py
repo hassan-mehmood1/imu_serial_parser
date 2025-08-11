@@ -17,6 +17,19 @@ def checkSum(list_data, check_data):
 def getSignInt16(value):
     return struct.unpack('h', struct.pack('H', value))[0]
 
+def send_hex_data(serial_port, hex_string):
+    """
+    Send hexadecimal data string to the serial port.
+    Example hex_string: "55 61 00 00 00 FF"
+    """
+    try:
+        # Remove spaces and convert to bytes
+        hex_bytes = bytes.fromhex(hex_string)
+        serial_port.write(hex_bytes)
+        # print(f"Sent: {hex_string}")
+    except ValueError as e:
+        print(f"Invalid hex string: {e}")
+
 def handleSerialData(raw_data):
     global buff, key, acceleration, angularVelocity, angle_degree
     
@@ -66,39 +79,42 @@ def handleSerialData(raw_data):
                     Y-axis: {AngY:.3f}
                     Z-axis: {AngZ:.3f}
                 ''')
-    elif buff[2] == 0x3A:
-        Hx = getSignInt16(data_buff[5] << 8 | data_buff[4]) / 120
-        Hy = getSignInt16(data_buff[7] << 8 | data_buff[6]) / 120
-        Hz = getSignInt16(data_buff[9] << 8 | data_buff[8]) / 120
-        magnetometer = [Hx, Hy, Hz]
-        
-        print(
-            f'''
-            Magnetometer (Gauss):
-                X-axis: {Hx:.3f}
-                Y-axis: {Hy:.3f}
-                Z-axis: {Hz:.3f}
-            ''')
-    elif buff[2] == 0x51:
-        Q0 = getSignInt16(data_buff[5] << 8 | data_buff[4]) / 32768.0
-        Q1 = getSignInt16(data_buff[7] << 8 | data_buff[6]) / 32768.0
-        Q2 = getSignInt16(data_buff[9] << 8 | data_buff[8]) / 32768.0
-        Q3 = getSignInt16(data_buff[11] << 8 | data_buff[10]) / 32768.0
-        quaternion = [Q0, Q1, Q2, Q3]
-        
-        print(
-            f'''
-            Quaternion:
-                Q0: {Q0:.5f}
-                Q1: {Q1:.5f}
-                Q2: {Q2:.5f}
-                Q3: {Q3:.5f}
-            ''')
+            send_hex_data(wt_imu, "FF AA 27 51 00")
     else:
-        print("No parsing provided for " + str(buff[1]))
-        print("Or data error")
-        buff = {}
-        key = 0
+        # print("///////////////////////////////////////////////////////////////////////////////")
+        if buff[2] == 0x3A:
+            Hx = getSignInt16(data_buff[5] << 8 | data_buff[4]) / 120
+            Hy = getSignInt16(data_buff[7] << 8 | data_buff[6]) / 120
+            Hz = getSignInt16(data_buff[9] << 8 | data_buff[8]) / 120
+            magnetometer = [Hx, Hy, Hz]
+            
+            print(
+                f'''
+                Magnetometer (Gauss):
+                    X-axis: {Hx:.3f}
+                    Y-axis: {Hy:.3f}
+                    Z-axis: {Hz:.3f}
+                ''')
+        elif buff[2] == 0x51:
+            Q0 = getSignInt16(data_buff[5] << 8 | data_buff[4]) / 32768.0
+            Q1 = getSignInt16(data_buff[7] << 8 | data_buff[6]) / 32768.0
+            Q2 = getSignInt16(data_buff[9] << 8 | data_buff[8]) / 32768.0
+            Q3 = getSignInt16(data_buff[11] << 8 | data_buff[10]) / 32768.0
+            quaternion = [Q0, Q1, Q2, Q3]
+            
+            print(
+                f'''
+                Quaternion:
+                    Q0: {Q0:.5f}
+                    Q1: {Q1:.5f}
+                    Q2: {Q2:.5f}
+                    Q3: {Q3:.5f}
+                ''')
+        else:
+            print("No parsing provided for " + str(buff[1]))
+            print("Or data error")
+            buff = {}
+            key = 0
     
     buff = {}
     key = 0
@@ -120,7 +136,7 @@ if __name__ == "__main__":
     
     find_ttyUSB()
     print("Operating System:", platform.system())
-    port = "/dev/ttyUSB0" if platform.system().find("Linux") >= 0 else "COM3"
+    port = "/dev/ttyUSB0" if platform.system().find("Linux") >= 0 else "COM4"
     
     baudrate = 115200
     
