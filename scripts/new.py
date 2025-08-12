@@ -64,7 +64,7 @@ def handleSerialData(raw_data):
         send_hex_data(wt_imu, "FF AA 27 51 00")
 
     # Quaternion packet
-    elif buff[1] == 0x51:
+    elif buff[2] == 0x51:
         latest_quat[0] = getSignInt16(data_buff[5] << 8 | data_buff[4]) / 32768.0
         latest_quat[1] = getSignInt16(data_buff[7] << 8 | data_buff[6]) / 32768.0
         latest_quat[2] = getSignInt16(data_buff[9] << 8 | data_buff[8]) / 32768.0
