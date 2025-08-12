@@ -7,6 +7,7 @@ import platform
 import serial.tools.list_ports
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Header
+import math
 
 # Global initialization
 buff = {}
@@ -52,13 +53,14 @@ def handleSerialData(raw_data):
 
     # IMU acceleration + gyro packet
     if buff[1] == 0x61:
-        latest_accel[0] = getSignInt16(data_buff[3] << 8 | data_buff[2]) / 32768.0 * 16
-        latest_accel[1] = getSignInt16(data_buff[5] << 8 | data_buff[4]) / 32768.0 * 16
-        latest_accel[2] = getSignInt16(data_buff[7] << 8 | data_buff[6]) / 32768.0 * 16
+        latest_accel[0] = getSignInt16(data_buff[3] << 8 | data_buff[2]) / 32768.0 * 16 * 9.80665
+        latest_accel[1] = getSignInt16(data_buff[5] << 8 | data_buff[4]) / 32768.0 * 16 * 9.80665
+        latest_accel[2] = getSignInt16(data_buff[7] << 8 | data_buff[6]) / 32768.0 * 16 * 9.80665
 
-        latest_gyro[0] = getSignInt16(data_buff[9] << 8 | data_buff[8]) / 32768.0 * 2000
-        latest_gyro[1] = getSignInt16(data_buff[11] << 8 | data_buff[10]) / 32768.0 * 2000
-        latest_gyro[2] = getSignInt16(data_buff[13] << 8 | data_buff[12]) / 32768.0 * 2000
+        # Gyroscope: raw -> deg/s -> rad/s
+        latest_gyro[0] = (getSignInt16(data_buff[9] << 8 | data_buff[8]) / 32768.0 * 2000) * math.pi / 180.0
+        latest_gyro[1] = (getSignInt16(data_buff[11] << 8 | data_buff[10]) / 32768.0 * 2000) * math.pi / 180.0
+        latest_gyro[2] = (getSignInt16(data_buff[13] << 8 | data_buff[12]) / 32768.0 * 2000) * math.pi / 180.0
 
         have_accel_gyro = True
         send_hex_data(wt_imu, "FF AA 27 51 00")
