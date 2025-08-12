@@ -94,6 +94,27 @@ def handleSerialData(raw_data):
         imu_msg.orientation.z = latest_quat[2]
         imu_msg.orientation.w = latest_quat[3]
 
+        # Orientation covariance
+        imu_msg.orientation_covariance = [
+            1.218e-05, 0, 0,
+            0, 1.218e-05, 0,
+            0, 0, 7.615e-05
+        ]
+
+        # Angular velocity covariance (rad/s)^2
+        imu_msg.angular_velocity_covariance = [
+            7.31e-07, 0, 0,
+            0, 7.31e-07, 0,
+            0, 0, 7.31e-07
+        ]
+
+        # Linear acceleration covariance (m/s^2)^2
+        imu_msg.linear_acceleration_covariance = [
+            7.38e-05, 0, 0,
+            0, 7.38e-05, 0,
+            0, 0, 7.38e-05
+        ]
+
         imu_pub.publish(imu_msg)
 
         # Reset flags so we wait for new data
