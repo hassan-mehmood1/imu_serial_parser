@@ -89,10 +89,10 @@ def handleSerialData(raw_data):
         imu_msg.angular_velocity.y = latest_gyro[1]
         imu_msg.angular_velocity.z = latest_gyro[2]
 
-        imu_msg.orientation.x = latest_quat[0]
-        imu_msg.orientation.y = latest_quat[1]
-        imu_msg.orientation.z = latest_quat[2]
-        imu_msg.orientation.w = latest_quat[3]
+        imu_msg.orientation.x = latest_quat[1]
+        imu_msg.orientation.y = latest_quat[2]
+        imu_msg.orientation.z = latest_quat[3]
+        imu_msg.orientation.w = latest_quat[0]
 
         # Orientation covariance
         imu_msg.orientation_covariance = [
