@@ -1,3 +1,5 @@
 <launch>
+    <!-- <param name="frame_id" value="base_imu" /> -->
+    <!-- <param name="parent_frame_id" value="base" /> -->
     <node pkg="imu_serial_parser" type="imu_ros.py" name="imu_serial_node" output="screen"/>
 </launch>
