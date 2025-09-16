@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="imu_serial_parser" type="imu_ros.py" name="imu_serial_node" output="screen">
+    <remap from="/imu/data_raw" to="/imu/data"/>
+  </node>
+</launch>
