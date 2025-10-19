@@ -79,7 +79,7 @@ def handleSerialData(raw_data):
         imu_msg = Imu()
         imu_msg.header = Header()
         imu_msg.header.stamp = rospy.Time.now()
-        imu_msg.header.frame_id = "imu_link"
+        imu_msg.header.frame_id = "trunk"
 
         imu_msg.linear_acceleration.x = latest_accel[0]
         imu_msg.linear_acceleration.y = latest_accel[1]
@@ -126,7 +126,7 @@ def handleSerialData(raw_data):
 
 if __name__ == "__main__":
     rospy.init_node("imu_serial_node", anonymous=True)
-    imu_pub = rospy.Publisher("/state/imu", Imu, queue_size=10)
+    imu_pub = rospy.Publisher("/imu/data", Imu, queue_size=10)
 
     find_ttyUSB()
     port = "/dev/ttyUSB0" if platform.system().find("Linux") >= 0 else "COM3"
